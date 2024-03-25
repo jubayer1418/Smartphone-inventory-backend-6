@@ -6,16 +6,14 @@ import { notFound } from "./app/middleware/notFound";
 import { router } from "./app/routes";
 
 const app: Application = express();
-
-app.use(express.json());
-app.use(cookieParser());
 app.use(
   cors({
     origin: ["https://smartphone-inventory-fronted-6.vercel.app/"],
-
     credentials: true,
   })
 );
+app.use(express.json());
+app.use(cookieParser());
 
 app.use("/", router);
 
