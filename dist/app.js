@@ -10,12 +10,12 @@ const globalErrorHandle_1 = require("./app/middleware/globalErrorHandle");
 const notFound_1 = require("./app/middleware/notFound");
 const routes_1 = require("./app/routes");
 const app = (0, express_1.default)();
-app.use((0, cors_1.default)({
-    origin: ["https://smartphone-inventory-fronted-6.vercel.app/"],
-    credentials: true,
-}));
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
+app.use((0, cors_1.default)({
+    origin: "*",
+    credentials: true,
+}));
 app.use("/", routes_1.router);
 app.get("/", (req, res) => {
     res.send("Assignment-6");
