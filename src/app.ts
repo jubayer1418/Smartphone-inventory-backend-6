@@ -13,7 +13,7 @@ app.use(cookieParser());
 app.use("/", router);
 app.use(
   cors({
-    origin: ["https://smartphone-inventory-fronted-6.vercel.app/"],
+    origin: ["http://localhost:5173/"],
     credentials: true,
   })
 );
