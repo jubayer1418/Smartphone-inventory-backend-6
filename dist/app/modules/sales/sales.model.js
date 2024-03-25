@@ -16,5 +16,13 @@ exports.salesSchema = new mongoose_1.Schema({
         type: String,
         required: [true, "NameOfBuyer is Required"],
     },
+    saleDate: {
+        type: String,
+        required: [true, "saleDate is Required"],
+    },
+    userEmail: {
+        type: String,
+        required: [true, "userEmail is Required"],
+    },
 }, { timestamps: true });
 exports.Sales = (0, mongoose_1.model)("Sales", exports.salesSchema);

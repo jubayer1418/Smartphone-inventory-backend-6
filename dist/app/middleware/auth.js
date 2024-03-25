@@ -12,29 +12,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.auth = void 0;
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const http_status_1 = __importDefault(require("http-status"));
+const AsyncFun_1 = require("../../utils/AsyncFun");
 const config_1 = __importDefault(require("../config"));
+const AppError_1 = __importDefault(require("../error/AppError"));
 const user_model_1 = require("../modules/user/user.model");
-const auth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
+const user_utils_1 = require("../modules/user/user.utils");
+const auth = (...requiredRoles) => {
+    return (0, AsyncFun_1.AsyncFun)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         const token = req.headers.authorization;
         if (!token) {
-            throw new Error("Unathorization access");
+            throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "You are not authorized!");
         }
-        const decoded = jsonwebtoken_1.default.verify(token, config_1.default.secret);
-        const { role, email, username } = decoded;
-        const user = yield user_model_1.User.findOne({
-            email, username, role
-        });
+        let decoded;
+        try {
+            decoded = (0, user_utils_1.verifyToken)(token, config_1.default.jwt_access_secret);
+        }
+        catch (error) {
+            throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "JWT expire!");
+        }
+        const { role, email } = decoded;
+        const user = yield user_model_1.User.isUserExistsByEmail(email);
         if (!user) {
-            throw new Error('Unauthorized Access');
+            throw new AppError_1.default(http_status_1.default.NOT_FOUND, "This user is not found !");
+        }
+        if (requiredRoles && !requiredRoles.includes(role)) {
+            throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "You are not authorized  hi!");
         }
         req.user = decoded;
         next();
-    }
-    catch (error) {
-        next(error);
-    }
-});
-exports.auth = auth;
+    }));
+};
+exports.default = auth;

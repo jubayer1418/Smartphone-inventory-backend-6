@@ -33,6 +33,9 @@ exports.userSchema = new mongoose_1.Schema({
     },
     role: {
         type: String,
+        enum: ["user", "manager"],
+        required: true,
+        default: "user",
     },
 }, { timestamps: true });
 exports.userSchema.pre("save", function (next) {

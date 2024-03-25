@@ -5,10 +5,11 @@ export type TLogin = {
   password: string;
 };
 export type TRegister = {
+  _id?: string;
   name: string;
   email: string;
   password: string;
-  role: "user" | "manager";
+  role: "user" | "manager" | "superAdmin";
 };
 export interface userModel extends Model<TRegister> {
   //checking user exist

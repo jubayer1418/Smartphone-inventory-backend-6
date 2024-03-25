@@ -13,10 +13,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteManyProductsIntoDB = exports.deleteSmartphoneToDb = exports.patchSmartphoneToDb = exports.getSmartphoneToDb = exports.getSingleProductIntoDB = exports.createSmartphoneToDb = void 0;
+const http_status_1 = __importDefault(require("http-status"));
 const QueryBuilder_1 = __importDefault(require("../../builder/src/app/builder/QueryBuilder"));
+const AppError_1 = __importDefault(require("../../error/AppError"));
+const user_model_1 = require("../user/user.model");
 const smartphone_model_1 = require("./smartphone.model");
-const createSmartphoneToDb = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(payload);
+const createSmartphoneToDb = (payload, email) => __awaiter(void 0, void 0, void 0, function* () {
+    const userEmail = email;
+    console.log(userEmail);
+    const userExist = yield user_model_1.User.findOne({ email: userEmail });
+    if (!userExist) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found");
+    }
     const result = yield smartphone_model_1.Smartphone.create(payload);
     return result;
 });
@@ -26,7 +34,7 @@ const getSingleProductIntoDB = (id) => __awaiter(void 0, void 0, void 0, functio
     return result;
 });
 exports.getSingleProductIntoDB = getSingleProductIntoDB;
-const getSmartphoneToDb = (query) => __awaiter(void 0, void 0, void 0, function* () {
+const getSmartphoneToDb = (query, email, role) => __awaiter(void 0, void 0, void 0, function* () {
     const minPrice = query.minPrice;
     const maxPrice = query.maxPrice;
     const ProductSearchableFields = [
@@ -44,7 +52,23 @@ const getSmartphoneToDb = (query) => __awaiter(void 0, void 0, void 0, function*
         .filter()
         .filterByPriceRange(minPrice, maxPrice)
         .paginate();
-    const result = yield productQuery.modelQuery;
+    let result;
+    if (role === "manager") {
+        console.log("result");
+        result = yield productQuery.modelQuery;
+    }
+    else if (role === "user") {
+        // console.log(email, role);
+        result = yield productQuery.modelQuery;
+    }
+    else if (role === "superAdmin") {
+        // console.log(email, role);
+        result = yield productQuery.modelQuery;
+    }
+    else {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Invalid user role");
+    }
+    console.log(result);
     return result;
 });
 exports.getSmartphoneToDb = getSmartphoneToDb;
